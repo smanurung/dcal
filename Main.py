@@ -4,7 +4,7 @@ import pika, sys
 if __name__ == "__main__":
 	tmp = sys.argv[1]
 	u = User(tmp)
-	print "username",u.name
+	print "username",u.getName()
 	
 #	CONSTANT
 	hostname = 'localhost'
@@ -15,4 +15,12 @@ if __name__ == "__main__":
 	queue_name = result.method.queue
 	
 	while 1:
+		cmd = raw_input('> ')
+		param = cmd.split(' ')
 		
+		if(param[0].strip() == '/NAME'):
+			if(param.__len__()>1):
+				u.setName(param[1])
+				print "INFO: Successfully change name to",u.getName()
+			else:
+				print "WARNING: You must enter new name to change"
