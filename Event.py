@@ -14,3 +14,16 @@ class Event:
 
 	def getPlace(self):
 		return self.place
+
+	def toString(self):
+		tmp = []
+		tmp.append(self.name)
+		tmp.append('%%')
+		tmp.append(self.place)
+		tmp.append('%%')
+		tmp.append(self.start)
+		tmp.append('%%')
+		tmp.append(self.end)
+		tmp.append('%%')
+		tmp.append(self.desc)
+		return ''.join(tmp)

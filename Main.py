@@ -1,5 +1,6 @@
 from User import User
 from threading import Thread
+from Event import Event
 import pika, sys, time
 
 def callback(channel,method_frame,header_frame,body):
@@ -65,8 +66,23 @@ if __name__ == "__main__":
 #		comm /EVT <calendar-name> <event-name> <event-place> <event-start-hour> <event-end-hour> <event-description>
 #		hour consists of 4 character e.g. 04pm, 05am
 #		no space character for description
-		elif(param[0].strip() == '/EVT')
+		elif(param[0].strip() == '/EVT'):
 			if (param.__len__() == 7):
-				
+				calName = param[1].strip()
+				EvtName = param[2]
+				EvtPlace = param[3]
+				EvtStart = param[4]
+				EvtEnd = param[5]
+				EvtDesc = param[6]
+
+				ev = Event(EvtName,EvtPlace,EvtStart,EvtEnd,EvtDesc)
+
+				x = calName + 'X'
+				channel.exchange_declare(exchange=x,type='fanout')
+
+				message = ev.toString()
+				print "message:",message
+				channel.basic_publish(exchange=x,routing_key='',body=message)
+				print "INFO: Event sent to calendar",calName
 			else:
 				print "ERROR: Parameter Error"

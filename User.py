@@ -44,4 +44,3 @@ class User:
 
 	def addListener(self,listener):
 		self.listenerL.append(listener)
-	
