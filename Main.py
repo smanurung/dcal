@@ -1,10 +1,19 @@
 from User import User
 from threading import Thread
 from Event import Event
+from Calendar import Calendar
 import pika, sys, time
 
 def callback(channel,method_frame,header_frame,body):
-	print body
+	calName = method_frame.exchange[:-1]
+#	print "calendarname",calName
+
+#	create event
+	m = body.split("%%")
+	newEv = Event(m[0],m[1],m[2],m[3],m[4])
+
+	u.addEvent(calName,newEv)
+	print "INFO: New Event Received"
 
 def startListening():
 	print 'Listening to calendar \''+calName+'\' ...'
@@ -13,6 +22,7 @@ def startListening():
 
 if __name__ == "__main__":
 	tmp = sys.argv[1]
+	global u
 	u = User(tmp)
 	print "username",u.getName()
 	
@@ -49,7 +59,8 @@ if __name__ == "__main__":
 			if(param.__len__()>1):
 				calName = param[1].strip()
 				
-				u.addCal(calName)
+				newCal = Calendar(calName)
+				u.addCal(newCal)
 				x = calName + 'X'
 #				make sure the calendar exists
 				channel.exchange_declare(exchange=x,type='fanout')
@@ -69,20 +80,26 @@ if __name__ == "__main__":
 		elif(param[0].strip() == '/EVT'):
 			if (param.__len__() == 7):
 				calName = param[1].strip()
-				EvtName = param[2]
-				EvtPlace = param[3]
-				EvtStart = param[4]
-				EvtEnd = param[5]
-				EvtDesc = param[6]
 
-				ev = Event(EvtName,EvtPlace,EvtStart,EvtEnd,EvtDesc)
+				if u.hasCalendar(calName):
+					EvtName = param[2]
+					EvtPlace = param[3]
+					EvtStart = param[4]
+					EvtEnd = param[5]
+					EvtDesc = param[6]
 
-				x = calName + 'X'
-				channel.exchange_declare(exchange=x,type='fanout')
+					ev = Event(EvtName,EvtPlace,EvtStart,EvtEnd,EvtDesc)
 
-				message = ev.toString()
-				print "message:",message
-				channel.basic_publish(exchange=x,routing_key='',body=message)
-				print "INFO: Event sent to calendar",calName
+					x = calName + 'X'
+					channel.exchange_declare(exchange=x,type='fanout')
+
+					message = ev.toString()
+#					print "message:",message
+					channel.basic_publish(exchange=x,routing_key='',body=message)
+					print "INFO: Event sent to calendar",calName
+				else:
+					print "INFO: You are not in this calendar"
 			else:
 				print "ERROR: Parameter Error"
+		elif(param[0].strip()=='/ALL'):
+			u.showAllEvents()

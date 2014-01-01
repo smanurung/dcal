@@ -15,6 +15,15 @@ class Event:
 	def getPlace(self):
 		return self.place
 
+	def getStart(self):
+		return self.start
+
+	def getEnd(self):
+		return self.end
+
+	def getDesc(self):
+		return self.desc
+
 	def toString(self):
 		tmp = []
 		tmp.append(self.name)

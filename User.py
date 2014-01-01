@@ -11,7 +11,7 @@ class User:
 		self.name = ''.join(tmp)
 		
 		self.queue = ''	#queue name
-		self.calL = []	#list of calendar name
+		self.calL = []	#list of calendar object
 		self.listenerL = []	#list of listener thread
 	
 	def generateRandom(self,size=10,chars=string.ascii_uppercase+string.ascii_lowercase+string.digits+string.punctuation):
@@ -35,12 +35,43 @@ class User:
 	def getCal(self):
 		return self.calL
 	
-	def addCal(self,calName):
-		if (not self.calL.__contains__(calName)):
-			self.calL.append(calName)
+	def addCal(self,cal):
+		flag = False
+		for c in self.calL:
+			if c.getName() == cal.getName():
+				flag = True
+				break
+		if flag:
+			pass
+		else:
+			self.calL.append(cal)
 
 	def getListenerL(self):
 		return self.listenerL
 
 	def addListener(self,listener):
 		self.listenerL.append(listener)
+
+	def hasCalendar(self,name):
+		for n in self.calL:
+			if n.getName() == name:
+				return True
+		return False
+
+	def addEvent(self,calName,ev):
+		for m in self.calL:
+			if (m.getName() == calName):
+				m.addEvent(ev)
+				break
+
+	def showAllEvents(self):
+		for c in self.calL:
+			print "***",c.getName(),"***"
+			for e in c.getEventList():
+				print "EVENT",e.getName()
+				print "Place:",e.getPlace()
+				print "Start:",e.getStart()
+				print "End:",e.getEnd()
+				print "Description:",e.getDesc()
+				print "-----"
+		print "INFO: Successfully showed all events"
